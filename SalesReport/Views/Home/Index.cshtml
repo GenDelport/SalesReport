@@ -1,0 +1,56 @@
+﻿@*@model SalesReport.Models.ViewModels.SalesReportViewModel
+
+@{
+    ViewData["Title"] = "Sales Report";
+
+    DateTime now = DateTime.Now;
+    int month = now.Month;
+    int year = now.Year;
+    int daysInMonth = DateTime.DaysInMonth(year, month);
+}
+
+<div class="text-center">
+    <img src="~/img/Duotone_light (4).jpeg" alt="Table Image" class="table-image">
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-primary" id="myButton">Open Modal</button>
+    </div>
+    <div class="table-container">
+        <table class="table-content table table-hover">
+            <thead>
+                <tr>
+                    @for (int day = 1; day <= daysInMonth; day++)
+                    {
+                        if (day == 1)
+                        {
+                            <th>Sales Person</th>
+                        }
+                        <th>@day</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.SalesLtSalesPerson)
+                {
+
+                    <tr>
+                <td>@product.FullName</td>
+                        @for (int day = 1; day <= daysInMonth; day++)
+                        {
+                            if (day == 1)
+                            {
+                                            <th>Sales Person</th>
+                            }
+                            <th>@day</th>
+                        }
+            </tr>
+                    <tr class="hidden-row">
+                        <td colspan="3">
+                            <p>Additional information for Row 1</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+*@
