@@ -50,6 +50,10 @@
         }
 
 
-.hidden-row {
+/*.hidden-row {
     display: none;
+}*/
+
+#myTable tr.drilldown {
+    background-color: #f5f5f5;
 }

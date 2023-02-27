@@ -14,49 +14,38 @@ namespace SalesReport.Controllers
         }
         public IActionResult Index()
         {
-            //        var salesData = _db.SalesOrderDetails
-            //.GroupBy(s => new { s.SalesPersonId, s.SaleDate })
-            //.Select(g => new
-            //{
-            //    SalesPersonID = g.Key.SalesPersonId,
-            //    SaleDate = g.Key.SaleDate,
-            //    SaleAmount = g.Sum(s => s.LineTotal)
-            //})
-            //.ToList();
+            var salesData = from sp in _db.SalesLtSalesPeople
+                            join sd in _db.SalesOrderDetails on sp.Id equals sd.SalesPersonId
+                            group sd by new { sd.SalesPersonId, sd.SaleDate.Year, sd.SaleDate.Month, sd.SaleDate.Day } into g
+                            select new
+                            {
+                                g.Key.SalesPersonId,
+                                g.First().SalesPerson.FullName,
+                                g.Key.Day,
+                                TotalAmount = g.Sum(sd => sd.LineTotal)
+                            };
 
-            //        var salespeople = _db.SalesLtSalesPeople.ToList();
-            //        var salespersonNames = salespeople.Select(s => s.FullName).ToList();
+            var viewModel = salesData.GroupBy(s => new { s.SalesPersonId, s.FullName })
+                             .Select(g => new SalesReportViewModel
+                             {
+                                 SalesPersonID = g.Key.SalesPersonId,
+                                 FullName = g.Key.FullName,
+                                 Amounts = g.OrderBy(s => s.Day).Select(s => s.TotalAmount).ToArray()
+                             })
+                             .ToList();
 
-            //        var datesOfMonth = Enumerable.Range(1, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
-            //            .Select(day => new DateTime(DateTime.Now.Year, DateTime.Now.Month, day))
-            //            .ToList();
-            //        var salesAmounts = new Dictionary<string, Dictionary<DateTime, decimal>>();
-            //        foreach (var salesperson in salespeople)
-            //        {
-            //            var salesByDate = datesOfMonth.ToDictionary(date => date, date => decimal.Zero);
-
-            //            foreach (var salesRecord in salesData.Where(s => s.SalesPersonID == salesperson.Id))
-            //            {
-            //                salesByDate[salesRecord.SaleDate] += salesRecord.SaleAmount;
-            //            }
-            //            salesAmounts.Add(salesperson.FullName, salesByDate);
-            //        }
-
-            //        var viewModel = new SalesReportViewModel
-            //        {
-            //            SalePersonNames = salespersonNames,
-            //            DatesOfMonth = datesOfMonth,
-            //            SalesAmounts = salesAmounts
-            //        };
-            //SalesReportViewModel salesReportViewModel = new SalesReportViewModel();
-            //salesReportViewModel.SalesLtSalesPerson = _db.SalesLtSalesPeople.ToList();
-            SalesReportViewModel salesReportViewModel = new SalesReportViewModel();
-            salesReportViewModel.SalesLtSalesPerson = _db.SalesLtSalesPeople.ToList();
-            return View(salesReportViewModel);
+            return View(viewModel);
         }
         public ActionResult DatePicker()
         {
             return PartialView("DatePicker");
+        }
+
+        [HttpGet]
+        public ActionResult SalesPivot(int id)
+        {
+            var salesOrder = _db.SalesOrderDetails.Where(x => x.SalesPersonId == id).ToList();
+            return Json(salesOrder);
         }
     }
 }

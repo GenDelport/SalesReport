@@ -1,55 +1,34 @@
-﻿@model SalesReport.Models.ViewModels.SalesReportViewModel
-
+﻿@model List<SalesReport.Models.ViewModels.SalesReportViewModel>
 @{
     ViewData["Title"] = "Sales Report";
-
-    DateTime now = DateTime.Now;
-    int month = now.Month;
-    int year = now.Year;
-    int daysInMonth = DateTime.DaysInMonth(year, month);
 }
-
 <div class="text-center">
     <img src="~/img/Duotone_light (4).jpeg" alt="Table Image" class="table-image">
-    <div class="d-flex justify-content-end">
-        <button class="btn btn-primary" onclick="datePickerModal()">Open Modal</button>
-    </div>
     <div class="table-container">
-        <table class="table-content table table-hover">
+        <table class="table-content table table-hover" id="myTable">
             <thead>
                 <tr>
-                    @for (int day = 1; day <= daysInMonth; day++)
+                    <th class="fixed-column">Sales Person</th>
+                    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
                     {
-                        if (day == 1)
-                        {
-                            <th>Sales Person</th>
-                        }
-                        <th>@day</th>
+                        <th>@i.ToString()</th>
                     }
                 </tr>
             </thead>
             <tbody>
-                @foreach (var product in Model.SalesLtSalesPerson)
+                @foreach (var item in Model)
                 {
-
-                    <tr>
-                <td>@product.FullName</td>
-                        @for (int day = 1; day <= daysInMonth; day++)
+                    <tr data-id="@item.SalesPersonID">
+                        <td>@item.FullName</td>
+                        @foreach (var amount in item.Amounts)
                         {
-                            if (day == 1)
-                            {
-                                            <th>Sales Person</th>
-                            }
-                            <th>@day</th>
+                            <td>@amount.ToString("C")</td>
                         }
-            </tr>
-                    <tr class="hidden-row">
-                        <td colspan="3">
-                            <p>Additional information for Row 1</p>
-                        </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        @*<div id="drilldown"></div>*@
     </div>
 </div>
