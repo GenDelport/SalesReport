@@ -1,83 +1,51 @@
-﻿//var pivotResult = [];
-//$(document).ready(function () {
-//    $('tr').click(function () {
-//        var dataId = $(this).data('id');
-//        var postData = { rowId: dataId };
-//        $.ajax({
-//            type: "GET",
-//            url: "/SalesReport/SalesPivot",
-//            data: postData,
-//            success: function (result) {
-
-//            },
-//            error: function (xhr, status, error) {
-//                console.log(xhr.responseText);
-//            }
-//        });
-//    });
-//});
-
-//const table = document.getElementById("myTable");
-//table.addEventListener("click", function (event) {
-//    // Check if the clicked element is a table cell
-//    if (event.target.tagName === "TD") {
-//        // Get the parent row of the clicked cell
-//        const row = event.target.parentNode;
-
-//        // Check if the row already has a drilldown row
-//        if (row.nextSibling && row.nextSibling.classList && row.nextSibling.classList.contains("drilldown")) {
-//            // Remove the drilldown row
-//            row.parentNode.removeChild(row.nextSibling);
-//        } else {
-//            // Create a new row element
-//            const newRow = document.createElement("tr");
-//            newRow.classList.add("drilldown");
-//            newRow.innerHTML = "<td colspan='2'>Hello</td>";
-
-//            // Insert the new row after the clicked row
-//            row.parentNode.insertBefore(newRow, row.nextSibling);
-//        }
-//    }
-//});
-
-
-const table = document.getElementById("myTable");
-
-// Add a click event listener to the table
-table.addEventListener("click", function (event) {
-    // Check if the clicked element is a table cell
-    if (event.target.tagName === "TD") {
-        // Get the parent row of the clicked cell
-        const row = event.target.parentNode;
-
-        // Get the ID of the clicked row
-        const id = row.dataset.id;
-        // Check if the row already has a drilldown row
-        if (row.nextSibling && row.nextSibling.classList && row.nextSibling.classList.contains("drilldown")) {
-            // Remove the drilldown row
-            row.parentNode.removeChild(row.nextSibling);
-        }
-        else {
-            // Send an AJAX request to the server to get data
-            $.ajax({
-                url: "/SalesReport/SalesPivot",
-                type: "GET",
-                data: { id: id },
-                dataType: "json",
-                success: function (data) {
-                    $.each(data, function (index, value) {
-                        const newRow = document.createElement("tr");
-                        newRow.classList.add("drilldown");
-                        newRow.innerHTML = "$<td colspan='2'></td>";
-
-                        // Insert the new row after the clicked row
-                        row.parentNode.insertBefore(newRow, row.nextSibling);
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.log("Error: " + error);
-                }
-            });
-        }
+﻿/*const table = document.createElement("table");*/
+/*var activeTable = document.getElementsByClassName("active-table");*/
+//table.style.maxHeight = "20px";
+/*const parentRows = document.querySelectorAll('.parent-row');*/
+var table = document.getElementsByClassName("active-table");
+var drillDown = document.getElementById("drillDown");
+function toggleTable(row) {
+    const id = row.dataset.id;
+    var nestedTable = row;
+    if (nestedTable.classList.contains("active-row")) {
+        nestedTable.classList.remove("active-row");
+        nestedTable.nextElementSibling.classList.remove('active-table');
+        //table.style.display = "none";
+        /* activeTable.display = "none";*/
+        table.display = "none";
+    } else {
+        nestedTable.classList.add("active-row");
+        nestedTable.nextElementSibling.classList.toggle('active-table');
+        //let tbody = table.tBodies[0];
+        //if (!tbody) {
+        //    tbody = document.createElement("tbody");
+        //    table.appendChild(tbody);
+        //}
+        const row2 = document.createElement("tr");
+        drillDown.appendChild(row2);
+       /* activeTable.display = "block";*/
+        $.ajax({
+            url: "/SalesReport/SalesPivot",
+            type: "GET",
+            data: { id: id },
+            dataType: "json",
+            success: function (data) {
+                /*table.style.display = "block";*/
+                $.each(data, function (index, value) {
+                    const cell = document.createElement("td");
+                    cell.textContent = value.salesPersonId;
+                    row2.appendChild(cell);
+                    //const tr = document.createElement("tr");
+                    //const td1 = document.createElement("td");
+                    //td1.textContent = value.lineTotal;
+                    //tr.appendChild(td1);
+                    //drillDown.appendChild(tr);
+                });
+                //nestedTable.appendChild(table);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error: " + error);
+            }
+        });
     }
-});
+}

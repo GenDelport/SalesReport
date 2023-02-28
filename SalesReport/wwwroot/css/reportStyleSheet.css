@@ -54,6 +54,10 @@
     display: none;
 }*/
 
-#myTable tr.drilldown {
+/*#myTable tr.drilldown {
     background-color: #f5f5f5;
+}*/
+
+.active-table {
+    display: none;
 }
