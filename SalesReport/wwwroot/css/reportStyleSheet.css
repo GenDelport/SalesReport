@@ -1,9 +1,19 @@
-﻿.table-container {
+﻿.report-banner {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+    width: 100%;
+}
+
+/*.table-container {
     position: relative;
     max-height: 75vh;
     width: 100%;
-    overflow-y: auto; 
+    overflow-y: auto;
 }
+
 .table-content {
     border-collapse: collapse;
     font-size: 0.9em;
@@ -15,7 +25,7 @@
     width: 100%;
     overflow-y: auto;
     max-width: 100%;
-} 
+}
 
 @media (max-width: 768px) {
     table-content {
@@ -24,10 +34,6 @@
         width: 100%;
         -webkit-overflow-scrolling: touch;
     }
-}
-.table-content thead {
-    position: sticky;
-    top: 0;
 }
 
 .table-content thead tr {
@@ -38,26 +44,66 @@
 }
 
 .table-content th,
-.table-content td{
+.table-content td {
     padding: 12px 15px;
 }
 
-    .table-content tbody tr {
-        border-bottom: 1px solid rgba(18,76,129,255);
+.table-content tbody tr {
+    border-bottom: 1px solid rgba(18,76,129,255);
+}
+
+    .table-content tbody tr:last-of-type {
+        border-bottom: 2px solid rgba(18,76,129,255);
     }
-        .table-content tbody tr:last-of-type {
-            border-bottom: 2px solid rgba(18,76,129,255);
-        }
 
+.fixed-column {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: white;
+}
 
-/*.hidden-row {
+.table-wrapper {
+    overflow-x: auto;
+}
+
+    .table-wrapper tbody {
+        overflow: hidden;
+    }
+
+.subTableRow {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+    .subTableRow.show {
+        opacity: 1;
+    }
+
+td {
+    padding: 10px
+}
+
+.small-icon {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+
+.hide {
     display: none;
 }*/
+/*#div1 {
+    height: 100%;*/
+    /*overflow-y: scroll;*/
+/*}
 
-/*#myTable tr.drilldown {
-    background-color: #f5f5f5;
+#div2 {
+    height: 100%;
+    background-color: #f2f2f2;
+    overflow-y: hidden;
 }*/
 
-.active-table {
-    display: none;
+.label-start {
+    display: flex;
+    align-items: center;
 }

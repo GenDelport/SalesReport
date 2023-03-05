@@ -28,4 +28,5 @@ public partial class SalesOrderDetail
     public virtual SalesOrderHeader SalesOrder { get; set; } = null!;
 
     public virtual SalesLtSalesPerson? SalesPerson { get; set; }
+    public virtual Product? Product { get; set; }
 }

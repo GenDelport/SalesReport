@@ -11,5 +11,7 @@
         public int? SalesPersonID { get; set; }
         public string? FullName { get; set; }
         public decimal[]? Amounts { get; set; }
+        //public IEnumerable<Months> Months { get; set; }
+        //public List<string>? Months { get; set; }
     }
 }
