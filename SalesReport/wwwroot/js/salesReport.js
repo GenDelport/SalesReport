@@ -65,7 +65,7 @@ function getDates(month) {
     for (let i = 1; i <= daysInMonth; i++) {
         const columnHeader = document.createElement('th');
         columnHeader.textContent = i.toString();
-        columnHeader.classList.add('text-center');
+        columnHeader.classList.add('date-columns');
         tableHeaderRow.appendChild(columnHeader);
     }
 }
@@ -427,6 +427,7 @@ function toggleTable(row, month) {
 
 function loadFooter() {
     var myLabel = document.getElementById("myLabel");
+    /*myLabel.style = "text-color:white";*/
     
     fetch('https://open.er-api.com/v6/latest/USD')
         .then(response => response.json())
@@ -466,3 +467,79 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe the table container element
 observer.observe(tableContainer);
+
+var hideBtn1 = document.querySelector('.hide-btn1');
+var hideBtn2 = document.querySelector('.hide-btn2');
+var hideBtn3 = document.querySelector('.hide-btn3');
+var hideBtn4 = document.querySelector('.hide-btn4');
+var colDiv1 = document.querySelector('.card1');
+var colDiv2 = document.querySelector('.card2');
+var colDiv3 = document.querySelector('.card3');
+var colDiv4 = document.querySelector('.card4');
+const icon1 = hideBtn1.querySelector("i");
+const icon2 = hideBtn2.querySelector("i");
+const icon3 = hideBtn3.querySelector("i");
+const icon4 = hideBtn4.querySelector("i");
+var content1 = true;
+var content2 = true;
+var content3 = true;
+var content4 = true;
+
+hideBtn1.addEventListener('click', function () {
+    if (content1) {
+        colDiv1.style.display = 'none';
+        content1 = false;
+        icon1.classList.replace("bi-eye-fill", "bi-eye-slash-fill");
+
+    }
+    else {
+        colDiv1.style.display = '';
+        content1 = true;
+        icon1.classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+    }
+});
+
+hideBtn2.addEventListener('click', function () {
+    if (content2) {
+        colDiv2.style.display = 'none';
+        content2 = false;
+        icon2.classList.replace("bi-eye-fill", "bi-eye-slash-fill");
+
+    }
+    else {
+        colDiv2.style.display = '';
+        content2 = true;
+        icon2.classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+    }
+});
+
+hideBtn3.addEventListener('click', function () {
+    if (content3) {
+        colDiv3.style.display = 'none';
+        content3 = false;
+        icon3.classList.replace("bi-eye-fill", "bi-eye-slash-fill");
+
+    }
+    else {
+        colDiv3.style.display = '';
+        content3 = true;
+        icon3.classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+    }
+});
+
+hideBtn4.addEventListener('click', function () {
+    if (content4) {
+        colDiv4.style.display = 'none';
+        content4 = false;
+        icon4.classList.replace("bi-eye-fill", "bi-eye-slash-fill");
+
+    }
+    else {
+        colDiv4.style.display = '';
+        content4 = true;
+        icon4.classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+    }
+});
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
