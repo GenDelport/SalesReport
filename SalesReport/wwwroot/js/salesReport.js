@@ -1,4 +1,24 @@
 ﻿var month = null;
+var colorPalette = [
+    '#05aaff',
+    '#82a0ff',
+    '#c890fb',
+    '#fd7edd',
+    '#ff72b1',
+    '#ff767e',
+    '#ff8b49',
+    '#ffa600',
+    '#6194EA',
+    '#817DCE',
+    '#9068AE',
+    '#95558D',
+    '#8F456D',
+];
+Apex.colors = colorPalette;
+let topFiveSalesChart = null;
+let tenBestProductsChart = null;
+let topThreeSalesChart = null;
+let lineChart = null;
 $(document).ready(async function () {
     await Promise.all([
         loadReport(),
@@ -22,33 +42,22 @@ function slectedMonth(data) {
 }
 function getDates(month) {
     var table = document.getElementById("myTable");
-
-    // Check if the table header already exists
     let tableHeader = table.querySelector('thead');
     if (!tableHeader) {
-        // Create the table header if it doesn't exist
         tableHeader = document.createElement('thead');
         table.appendChild(tableHeader);
     }
-
-    // Create or update the table header row
     let tableHeaderRow = tableHeader.querySelector('tr');
     if (!tableHeaderRow) {
-        // Create the table header row if it doesn't exist
         tableHeaderRow = document.createElement('tr');
         tableHeader.appendChild(tableHeaderRow);
     } else {
-        // Clear the existing header row
         tableHeaderRow.innerHTML = '';
     }
-
-    // Create the fixed column header
     const fixedColumnHeader = document.createElement('th');
     fixedColumnHeader.textContent = 'Sales Person';
     fixedColumnHeader.classList.add('fixed-column');
     tableHeaderRow.appendChild(fixedColumnHeader);
-
-// Create the column headers for each day of the month
     if (month == null) {
         month = 1
     }
@@ -64,26 +73,28 @@ function renderReport(data) {
     getDates(month);
     var table = document.getElementById("myTable");
     var tbody = table.querySelector("tbody") || table.appendChild(document.createElement("tbody"));
-
-    // Remove all existing rows before updating
     while (tbody.firstChild) {
         tbody.removeChild(tbody.firstChild);
     }
-
     data.forEach(function (value) {
         var row = createRow(value);
         tbody.appendChild(row);
     });
-
     function createRow(value) {
         var row = document.createElement("tr");
         row.setAttribute("data-id", value.salesPersonID);
         row.setAttribute("onclick", "toggleTable(this,month)");
-        row.setAttribute("class", "dataRow");
+
+        var arrow = document.createElement("span");
+        arrow.setAttribute("class", "arrowClass");
+        arrow.textContent = "▼";
+        arrow.style.color = "gray";
+        arrow.style.marginLeft = "5px"
 
         var fullNameCell = createCell(value.fullName, "fixed-column");
+        fullNameCell.appendChild(arrow);
         row.appendChild(fullNameCell);
-
+        
         value.amounts.forEach(function (amount) {
             var amountCell = createCell("R" + amount.toFixed(2));
             row.appendChild(amountCell);
@@ -96,15 +107,12 @@ function renderReport(data) {
 
         return row;
     }
-
     function updateRow(row, value) {
-        // No need to update rows, just delete all existing rows and recreate them
         while (tbody.firstChild) {
             tbody.removeChild(tbody.firstChild);
         }
         createRow(value);
     }
-
     function createCell(value, className) {
         var cell = document.createElement("td");
         cell.innerHTML = value;
@@ -131,19 +139,19 @@ function loadTopSalesPerson() {
 function loadSales() {
     $.get('/SalesReport/TopFiveSalesPeople', (data, status) => {
         console.log(status, data);
-        renderAccountingChart(data);
+        renderTopFiveSalesChart(data);
     })
 }
 function loadProducts() {
     $.get('/SalesReport/TopTenBestSellerProducts', (data, status) => {
         console.log(status, data);
-        renderSpieciesChart(data);
+        renderTenBestProductsChart(data);
     })
 }
 function loadTotalSales() {
     $.get('/SalesReport/TopSalesOfLastThreeMonths', (data, status) => {
         console.log(status, data);
-        renderDiagnosisChart(data);
+        renderTopThreeSalesChart(data);
     })
 }
 function loadLineChart() {
@@ -152,31 +160,9 @@ function loadLineChart() {
         renderLineChart(data);
     })
 }
-var colorPalette = [
-    '#05aaff',
-    '#82a0ff',
-    '#c890fb',
-    '#fd7edd',
-    '#ff72b1',
-    '#ff767e',
-    '#ff8b49',
-    '#ffa600',
-    '#6194EA',
-    '#817DCE',
-    '#9068AE',
-    '#95558D',
-    '#8F456D',
-];
-Apex.colors = colorPalette;
-let fromDate = new Date();
-let toDate = new Date()
-let salesChart = null;
-let diagnosisChart = null;
-let spieciesChart = null;
-let accountingChart = null;
-let lineChart = null;
 
-function renderAccountingChart(data) {
+
+function renderTopFiveSalesChart(data) {
     let chartData = []
     let chartLabels = []
     if (data != null) {
@@ -216,7 +202,7 @@ function renderAccountingChart(data) {
 
         },
         series: [{
-            name: "Amount",
+            name: "Total Sales",
             data: chartData,
 
         }],
@@ -232,17 +218,17 @@ function renderAccountingChart(data) {
             },
         },
     };
-    if (accountingChart == null) {
-        accountingChart = new ApexCharts(document.getElementById("chart-bar-sales"), options);
+    if (topFiveSalesChart == null) {
+        topFiveSalesChart = new ApexCharts(document.getElementById("chart-bar-sales"), options);
 
-        accountingChart.render();
+        topFiveSalesChart.render();
     }
     else {
-        accountingChart.updateOptions(options)
+        topFiveSalesChart.updateOptions(options)
     }
 }
 
-function renderSpieciesChart(data) {
+function renderTenBestProductsChart(data) {
     let series = []
     let labels = []
     if (data != null)
@@ -252,7 +238,7 @@ function renderSpieciesChart(data) {
         }
     var options = {
         chart: {
-            id: "chart-pie-spiecies",
+            id: "chart-pie-products",
             width: '100%',
             height: '100%',
             type: 'pie',
@@ -270,18 +256,18 @@ function renderSpieciesChart(data) {
         labels: labels,
 
     };
-    if (spieciesChart == null) {
-        spieciesChart = new ApexCharts(document.getElementById("chart-pie-spiecies"), options);
+    if (tenBestProductsChart == null) {
+        tenBestProductsChart = new ApexCharts(document.getElementById("chart-pie-products"), options);
 
-        spieciesChart.render();
+        tenBestProductsChart.render();
     }
     else {
 
-        spieciesChart.updateOptions(options)
+        tenBestProductsChart.updateOptions(options)
     }
 }
 
-function renderDiagnosisChart(data) {
+function renderTopThreeSalesChart(data) {
     let chartData = []
     let chartLabels = []
     if (data != null) {
@@ -292,7 +278,7 @@ function renderDiagnosisChart(data) {
     }
     var options = {
         chart: {
-            id: "chart-bar-diagnosis",
+            id: "chart-bar-topsales",
             width: '100%',
             height: '100%',
             type: 'bar',
@@ -305,6 +291,13 @@ function renderDiagnosisChart(data) {
             colors: colorPalette,
         },
         colors: colorPalette,
+        dataLabels: {
+            enabled: true,
+            formatter: function (val, opt) {
+                return "R " + Number((val).toFixed(2)).toLocaleString()
+            },
+
+        },
         plotOptions: {
             bar: {
                 distributed: true,
@@ -314,23 +307,22 @@ function renderDiagnosisChart(data) {
         },
         series: [
             {
-                name: "Diagnosis",
+                name: "Total Sales",
                 data: chartData
             }],
         xaxis: {
-            name: 'Total',
+            name: 'Month',
             categories: chartLabels
         },
     };
 
-    if (diagnosisChart == null) {
-        diagnosisChart = new ApexCharts(document.getElementById("chart-bar-diagnosis"), options);
+    if (topThreeSalesChart == null) {
+        topThreeSalesChart = new ApexCharts(document.getElementById("chart-bar-topsales"), options);
 
-        diagnosisChart.render();
+        topThreeSalesChart.render();
     }
     else {
-        diagnosisChart.updateOptions(options)
-
+        topThreeSalesChart.updateOptions(options)
     }
 }
 
@@ -358,6 +350,13 @@ function renderLineChart(data) {
             colors: colorPalette,
         },
         colors: colorPalette,
+        dataLabels: {
+           
+            formatter: function (val, opt) {
+                return "R " + Number((val).toFixed(2)).toLocaleString()
+            },
+
+        },
         plotOptions: {
             bar: {
                 distributed: true,
@@ -367,11 +366,11 @@ function renderLineChart(data) {
         },
         series: [
             {
-                name: "Diagnosis",
+                name: "Total Sales",
                 data: chartData
             }],
         xaxis: {
-            name: 'Total',
+            name: 'Month',
             categories: chartLabels
         },
     };
@@ -384,7 +383,7 @@ function renderLineChart(data) {
     }
 }
 
-function toggleTable(row,month) {
+function toggleTable(row, month) {
     var rowId = $(row).data('id');
     var subTableRow = $(row).next('.subTableRow');
     if (subTableRow.is(":visible")) {
@@ -400,9 +399,9 @@ function toggleTable(row,month) {
                 var subTableHtml = '<table>';
                 subTableHtml += '<thead>';
                 subTableHtml += '<tr>';
-                subTableHtml += '<td>LineTotal</td>';
-                subTableHtml += '<td>Order Quantity</td>';
-                subTableHtml += '<td>Product Name</td>';
+                subTableHtml += '<td style="font-weight: bold">Line Total</td>';
+                subTableHtml += '<td style="font-weight: bold">Order Quantity</td>';
+                subTableHtml += '<td style="font-weight: bold">Product Name</td>';
                 subTableHtml += '</tr>';
                 subTableHtml += '</thead>';
                 subTableHtml += '<tbody>';
@@ -413,7 +412,6 @@ function toggleTable(row,month) {
                     subTableHtml += '<td> R' + value.salesAmount.toFixed(2) + '</td>';
                     subTableHtml += '</tr>';
                 });
-
                 subTableHtml += '</tbody>';
                 subTableHtml += '</table>';
                 subTableRow.html(subTableHtml);
@@ -451,16 +449,20 @@ function loadFooter() {
         });
 }
 
-//$(window).scroll(function () {
-//    if ($(this).scrollTop() > 0) {
-//        $('.navbar, .footer').removeClass('hide');
-//    } else {
-//        $('.navbar, .footer').addClass('hide');
-//    }
-//});
+const tableContainer = document.querySelector('.table-container');
 
-//$('#scrollButton').click(function () {
-//    $('html, body').animate({
-//        scrollTop: $('#div2').offset().top
-//    }, 'slow');
-//});
+// Create an intersection observer that will call a function when the element is visible
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            // Add the fade-in class to the table container
+            tableContainer.classList.add('fade-in');
+        } else {
+            // Remove the fade-in class from the table container
+            tableContainer.classList.remove('fade-in');
+        }
+    });
+});
+
+// Observe the table container element
+observer.observe(tableContainer);
